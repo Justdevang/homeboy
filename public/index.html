@@ -511,6 +511,11 @@ a { color: inherit; }
   .bento__tags { gap: 6px; margin-top: 12px; }
   .bento__tags li { padding: 7px 10px 6px; font-size: 10px; letter-spacing: .1em; }
 }
+/* Tall screens crop the photo's sides, and his face sits at 55% across it, so pull
+   it left to put him dead centre. translate stacks with the parallax transform. */
+@media (max-aspect-ratio: 3/4) {
+  .hero__media img { translate: -5% 0; }
+}
 @media (max-width: 520px) {
   .nav { font-size: 14px; }
   .nav a { padding: 0 12px; }
