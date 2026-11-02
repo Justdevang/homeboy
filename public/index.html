@@ -499,10 +499,17 @@ a { color: inherit; }
   .collabs__title { font-size: 17vw; }
   .feedback__note { margin-left: 0; }
   .contact__panel { width: 100%; margin: 0 16px max(16px, env(safe-area-inset-bottom)); }
-  /* One column: the open card takes the height, the rest fold down to their labels */
-  .bento { grid-template-columns: minmax(0, 1fr); height: 920px; gap: 10px; }
-  .bento__card, .bento__link { gap: 8px; padding: 16px 18px; }
-  .bento__title { font-size: 28px; }
+  /* Phones keep a real bento: two columns, the big tile spanning both */
+  .band { padding-top: 72px; padding-bottom: 72px; }
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); height: min(820px, 112svh); gap: 8px; }
+  .bento__card { border-radius: 22px; }
+  .bento__card, .bento__link { gap: 6px; padding: 14px; }
+  .bento__label { gap: .9em; font-size: 10px; letter-spacing: .14em; }
+  .bento__card:not(.is-open) .bento__go { display: none; }
+  .bento__title { font-size: clamp(22px, 7vw, 30px); }
+  .bento__text { margin-top: 10px; font-size: 15px; }
+  .bento__tags { gap: 6px; margin-top: 12px; }
+  .bento__tags li { padding: 7px 10px 6px; font-size: 10px; letter-spacing: .1em; }
 }
 @media (max-width: 520px) {
   .nav { font-size: 14px; }
@@ -701,8 +708,9 @@ const glassImgs = cards.map(card => {
   card.prepend(bg);
   return bg.firstChild;
 });
-// Six tiles on a 4 x 3 grid as [col, row, colSpan, rowSpan]; the first is the big one
-const LAYOUTS = [
+// Tiles as [col, row, colSpan, rowSpan]; the first is the big one.
+// Wide screens: six tiles on a 4 x 3 grid
+const WIDE = [
   [[0, 0, 2, 2], [2, 0, 1, 1], [3, 0, 1, 1], [2, 1, 2, 1], [0, 2, 2, 1], [2, 2, 2, 1]],
   [[2, 0, 2, 2], [0, 0, 2, 1], [0, 1, 1, 1], [1, 1, 1, 1], [0, 2, 2, 1], [2, 2, 2, 1]],
   [[1, 1, 2, 2], [0, 0, 1, 1], [1, 0, 1, 1], [2, 0, 2, 1], [0, 1, 1, 2], [3, 1, 1, 2]],
@@ -712,7 +720,17 @@ const LAYOUTS = [
   [[0, 0, 3, 2], [3, 0, 1, 1], [3, 1, 1, 1], [0, 2, 1, 1], [1, 2, 1, 1], [2, 2, 2, 1]],
   [[1, 0, 3, 2], [0, 0, 1, 1], [0, 1, 1, 1], [0, 2, 2, 1], [2, 2, 1, 1], [3, 2, 1, 1]]
 ];
-const oneColumn = matchMedia('(max-width: 760px)');
+// Phones: the same idea on a 2 x 5 grid, the big tile two cells wide and two tall
+const NARROW = [
+  [[0, 0, 2, 2], [0, 2, 1, 1], [1, 2, 1, 1], [0, 3, 2, 1], [0, 4, 1, 1], [1, 4, 1, 1]],
+  [[0, 1, 2, 2], [0, 0, 1, 1], [1, 0, 1, 1], [0, 3, 1, 2], [1, 3, 1, 1], [1, 4, 1, 1]],
+  [[0, 2, 2, 2], [0, 0, 2, 1], [0, 1, 1, 1], [1, 1, 1, 1], [0, 4, 1, 1], [1, 4, 1, 1]],
+  [[0, 3, 2, 2], [0, 0, 1, 2], [1, 0, 1, 1], [1, 1, 1, 1], [0, 2, 1, 1], [1, 2, 1, 1]],
+  [[0, 1, 2, 2], [0, 0, 1, 1], [1, 0, 1, 1], [0, 3, 1, 1], [1, 3, 1, 2], [0, 4, 1, 1]],
+  [[0, 2, 2, 2], [0, 0, 1, 2], [1, 0, 1, 1], [1, 1, 1, 1], [0, 4, 1, 1], [1, 4, 1, 1]]
+];
+const narrow = matchMedia('(max-width: 760px)');
+const tiles = () => (narrow.matches ? { cols: 2, rows: 5, layouts: NARROW } : { cols: 4, rows: 3, layouts: WIDE });
 const shuffled = a => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -732,20 +750,15 @@ function placeBento(stagger) {
   const { W, H, g } = grid();
   band.style.setProperty('--bw', band.clientWidth + 'px');
   band.style.setProperty('--bh', band.clientHeight + 'px');
-  let y = 0;
-  // One column: the open card takes the height, the rest stack in their shuffled order
-  const unit = (H - g * 5) / (cards.length - 1 + 3.6);
+  const { cols, rows, layouts } = tiles();
+  const cw = (W - g * (cols - 1)) / cols;
+  const rh = (H - g * (rows - 1)) / rows;
   order.forEach((ci, s) => {
-    let x, top, w, h;
-    if (oneColumn.matches) {
-      x = 0; top = y; w = W; h = unit * (s === 0 ? 3.6 : 1);
-      y += h + g;
-    } else {
-      const [c, r, cs, rs] = LAYOUTS[layout][s];
-      const cw = (W - g * 3) / 4;
-      const rh = (H - g * 2) / 3;
-      x = c * (cw + g); top = r * (rh + g); w = cs * cw + (cs - 1) * g; h = rs * rh + (rs - 1) * g;
-    }
+    const [c, r, cs, rs] = layouts[layout][s];
+    const x = c * (cw + g);
+    const top = r * (rh + g);
+    const w = cs * cw + (cs - 1) * g;
+    const h = rs * rh + (rs - 1) * g;
     const card = cards[ci];
     card.style.setProperty('--delay', stagger ? (Math.random() * 0.22).toFixed(3) + 's' : '0s');
     card.style.transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0)`;
@@ -761,10 +774,11 @@ function shuffleBento(focus, cell) {
   if (focus === undefined) {
     focus = order[1 + Math.floor(Math.random() * (cards.length - 1))];
   }
-  let options = LAYOUTS.map((_, i) => i).filter(i => i !== layout);
+  const { layouts } = tiles();
+  let options = layouts.map((_, i) => i).filter(i => i !== layout);
   if (cell) {
-    const covering = LAYOUTS.map((_, i) => i).filter(i => {
-      const [c, r, cs, rs] = LAYOUTS[i][0];
+    const covering = layouts.map((_, i) => i).filter(i => {
+      const [c, r, cs, rs] = layouts[i][0];
       return cell[0] >= c && cell[0] < c + cs && cell[1] >= r && cell[1] < r + rs;
     });
     options = covering.filter(i => i !== layout).length ? covering.filter(i => i !== layout) : covering;
@@ -796,9 +810,13 @@ function takeOver(i, e) {
   if (i === order[0] || performance.now() < lockUntil) return;
   lockUntil = performance.now() + 1300;
   let cell = null;
-  if (e && 'clientX' in e && !oneColumn.matches) {
+  if (e && 'clientX' in e) {
+    const { cols, rows } = tiles();
     const r = bento.getBoundingClientRect();
-    cell = [clamp(Math.floor((e.clientX - r.left) / r.width * 4), 0, 3), clamp(Math.floor((e.clientY - r.top) / r.height * 3), 0, 2)];
+    cell = [
+      clamp(Math.floor((e.clientX - r.left) / r.width * cols), 0, cols - 1),
+      clamp(Math.floor((e.clientY - r.top) / r.height * rows), 0, rows - 1)
+    ];
   }
   shuffleBento(i, cell);
   scheduleBento();
@@ -813,9 +831,15 @@ cards.forEach((card, i) => {
     bentoHeld = true;
     takeOver(i);
   });
-  // Touch: a tap opens the card and the cycle restarts from it
-  card.addEventListener('click', e => takeOver(i, e));
+  // Touch: a tap opens the card where the finger is and the cycle restarts from it.
+  // The Mixcloud card opens first and only follows its link once it is open.
+  card.addEventListener('click', e => {
+    if (lastPointer !== 'mouse' && i !== order[0]) e.preventDefault();
+    takeOver(i, e);
+  });
 });
+let lastPointer = 'mouse';
+bento.addEventListener('pointerdown', e => (lastPointer = e.pointerType));
 // One glare update per frame however fast the pointer reports
 let glareEvent = null;
 bento.addEventListener('pointermove', e => {
@@ -839,7 +863,10 @@ bento.addEventListener('focusout', e => {
   bentoHeld = false;
   scheduleBento();
 });
-oneColumn.addEventListener('change', () => placeBento(false));
+narrow.addEventListener('change', () => {
+  layout = 0;
+  placeBento(false);
+});
 
 // First placement lands without animating in from the corner
 cards.forEach(c => (c.style.transition = 'none'));
