@@ -9,7 +9,7 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link rel="preload" as="image" href="images/hero-2000.jpg" imagesrcset="images/hero-1200.jpg 1200w, images/hero-2000.jpg 2000w" imagesizes="100vw">
+<link rel="preload" as="image" href="images/artist-2000.jpg" imagesrcset="images/artist-1200.jpg 918w, images/artist-2000.jpg 1530w" imagesizes="77vh">
 <!-- Tanker (display) and Satoshi (text), Fontshare: free for commercial use under the ITF Free Font License -->
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=tanker@400&f[]=satoshi@400,500,501,700&display=swap">
 <style>
@@ -25,7 +25,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--black); -webkit-text-size-adjust: 100%; }
-@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html { scroll-behavior: smooth; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 body {
@@ -100,32 +100,50 @@ a { color: inherit; }
 .nav[data-tone="light"].glass--fallback { background: hsl(0 0% 100% / .4); }
 
 /* Hero */
-.hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; }
-.hero__media { position: absolute; inset: 0; background: #0a0a12; }
-.hero__media img {
+.hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; background: var(--black); }
+/* The same shot, blurred, spills the booth's red light into the sides of wide screens */
+.hero__glow { position: absolute; inset: -8%; will-change: transform; }
+.hero__glow img {
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
-  object-position: 50% 40%;
-  transform-origin: 50% 0;
-  will-change: transform;
+  filter: blur(42px) saturate(1.5) brightness(.55);
 }
-/* Fades the photo into the black page so the name stays legible over the decks */
+/* Lifted so the empty ceiling sits under the nav and the TUC sign rides high; the name fills the black below */
+.hero__media { position: absolute; inset: -17% 0 17%; display: flex; justify-content: center; }
+.hero__media img {
+  flex: none;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+/* Side shadows, darkened corners, and a fade into the page below */
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 20%, transparent 48%, #000 95%);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .9) 0%, transparent 24%, transparent 76%, rgba(0, 0, 0, .9) 100%),
+    radial-gradient(ellipse 78% 72% at 50% 40%, transparent 52%, rgba(0, 0, 0, .55) 80%, rgba(0, 0, 0, .95) 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .45) 0%, transparent 14%, transparent 56%, #000 83%);
 }
+/* Sits at the foot of the hero, over the decks as they fade to black */
 .hero__name {
   position: absolute;
   z-index: 1;
+  bottom: clamp(10px, 2.2vh, 28px);
   left: var(--pad);
   right: var(--pad);
-  bottom: clamp(6px, 1.6vw, 24px);
   margin: 0;
   color: var(--lime);
   font: 400 24vw/.82 var(--display);
+  text-align: center;
   white-space: nowrap;
   will-change: transform;
 }
@@ -206,6 +224,7 @@ a { color: inherit; }
   border-bottom: 1px solid rgba(255, 255, 255, .28);
 }
 .genres li:first-child { border-top: 1px solid rgba(255, 255, 255, .28); }
+.genres .fit { transform-origin: 0 50%; will-change: transform; }
 /* Lime and black duotone ties the red club photos into the palette */
 .frame--duo { aspect-ratio: 3 / 4; background: var(--lime); }
 .frame--duo img { filter: grayscale(1) brightness(2.6) contrast(1.15); mix-blend-mode: multiply; }
@@ -338,9 +357,6 @@ a { color: inherit; }
   .nav a { padding: 0 12px; }
   .nav .nav__name { display: none; }
 }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; }
-}
 </style>
 </head>
 <body>
@@ -354,8 +370,9 @@ a { color: inherit; }
 </nav>
 
 <header class="hero" id="top" data-tone="dark">
+  <div class="hero__glow" id="hero-glow" aria-hidden="true"><img src="images/artist-glow.jpg" alt=""></div>
   <div class="hero__media">
-    <img id="hero-img" src="images/hero-2000.jpg" srcset="images/hero-1200.jpg 1200w, images/hero-2000.jpg 2000w" sizes="100vw" alt="Homeboy at the decks seen from behind, facing a packed crowd with hands in the air" fetchpriority="high">
+    <img id="hero-img" src="images/artist-2000.jpg" srcset="images/artist-1200.jpg 918w, images/artist-2000.jpg 1530w" sizes="77vh" alt="Homeboy on the Pioneer decks beneath the TUC sign, lit red, the crowd close behind him" fetchpriority="high">
   </div>
   <h1 class="hero__name" id="name"><span class="fit">HOMEBOY</span></h1>
 </header>
@@ -382,14 +399,13 @@ a { color: inherit; }
     <div class="sound__grid">
       <ul class="genres" id="genres">
         <li><span class="fit">Nu Disco</span></li>
-        <li><span class="fit">Afro</span></li>
-        <li><span class="fit">Drum &amp; Bass</span></li>
         <li><span class="fit">Indie Dance</span></li>
-        <li><span class="fit">Peak time techno<br>&amp; Acid</span></li>
+        <li><span class="fit">Break Beat</span></li>
+        <li><span class="fit">Minimal Techno<br>
         <li><span class="fit">Deep underground<br>techno</span></li>
       </ul>
       <div class="frame frame--duo" data-window=".1">
-        <img src="images/tuc.jpg" alt="Homeboy at the decks beneath the TUC sign" loading="lazy" decoding="async">
+        <img src="images/sign.jpg" alt="Homeboy in headphones and sunglasses under the red TUC sign" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
@@ -442,7 +458,6 @@ a { color: inherit; }
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const nav = $('#nav');
 const navLinks = $$('#nav a[href^="#"]:not(.nav__name)');
@@ -466,13 +481,14 @@ const words = $$('#lead .w');
 
 const name = $('#name');
 const genres = $$('#genres li');
-// Genres open up with letter-spacing as they cross the middle of the screen
-const GENRE_TRACK = 0.1;
+const genreSpans = genres.map(li => li.querySelector('.fit'));
+// Genres stretch open as they cross the middle of the screen. scaleX runs on the
+// compositor; animating letter-spacing re-laid out the text every frame and jittered.
+const GENRE_MIN = 0.74;
 
 // Size type so it fills its line at its widest state
-function fit(el, max, track) {
+function fit(el, max) {
   const span = el.querySelector('.fit');
-  el.style.letterSpacing = track ? GENRE_TRACK + 'em' : '';
   el.style.fontSize = '100px';
   const size = Math.min(max, 100 * el.clientWidth / span.offsetWidth);
   el.style.fontSize = size.toFixed(2) + 'px';
@@ -484,14 +500,15 @@ function fitDown(el) {
   if (over > 1.001) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) / over).toFixed(2) + 'px';
 }
 function fitAll() {
-  fit(name, innerHeight * 0.42, false);
-  genres.forEach(li => fit(li, Math.min(180, li.clientWidth * 0.2), true));
+  // clientHeight ignores mobile toolbars showing and hiding, so the name keeps its size
+  fit(name, document.documentElement.clientHeight * 0.26);
+  genres.forEach(li => fit(li, Math.min(180, li.clientWidth * 0.2)));
   $$('.heading, .collabs__title, .contact__title').forEach(fitDown);
 }
 
 let lenis = null;
-if (!RM && window.Lenis) {
-  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, touchMultiplier: 1.4 });
+if (window.Lenis) {
+  lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 1, smoothWheel: true });
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -517,12 +534,20 @@ function measure() {
     sections: $$('[data-tone]').map(e => ({ e, id: e.id, tone: e.dataset.tone, ...box(e) })),
     speed: $$('[data-speed]').map(e => ({ e, s: +e.dataset.speed, ...box(e) })),
     windows: $$('[data-window]').map(e => ({ img: e.querySelector('img'), s: +e.dataset.window, ...box(e) })),
-    genres: genres.map(e => ({ e, ...box(e) })),
+    genres: genres.map((e, i) => ({ span: genreSpans[i], ...box(e) })),
+    genreList: box($('#genres')),
     lead: box(lead)
   };
 }
 
+const heroImg = $('#hero-img');
+const heroGlow = $('#hero-glow');
+const wordOpacity = words.map(() => -1);
+const onScreen = (b, y, H, margin = 0) => b.top - y < H + margin && b.top + b.h - y > -margin;
 let last = -1;
+let tone = '';
+let currentId;
+
 function frame(now) {
   requestAnimationFrame(frame);
   if (lenis) lenis.raf(now);
@@ -531,42 +556,56 @@ function frame(now) {
   last = y;
   const H = innerHeight;
 
-  // Nav takes the tone of whatever section sits under it, and marks the section in view
+  // Nav takes the tone of the section under it and marks the section in view.
+  // Only touch the DOM on a change: each write re-runs the glass filter.
   const under = geo.sections.find(s => s.top - y <= 40 && s.top + s.h - y > 40);
-  nav.dataset.tone = under ? under.tone : 'dark';
+  const nextTone = under ? under.tone : 'dark';
+  if (nextTone !== tone) nav.dataset.tone = tone = nextTone;
   const mid = y + H * 0.45;
   const current = geo.sections.find(s => s.id && s.top <= mid && s.top + s.h > mid);
-  navLinks.forEach(a => {
-    if (current && a.getAttribute('href') === '#' + current.id) a.setAttribute('aria-current', 'true');
-    else a.removeAttribute('aria-current');
-  });
-
-  if (RM) return;
+  const id = current ? current.id : null;
+  if (id !== currentId) {
+    currentId = id;
+    navLinks.forEach(a => {
+      if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
 
   if (y < H * 1.2) {
     const k = clamp(y / H, 0, 1);
-    $('#hero-img').style.transform = `translate3d(0, ${y * 0.42}px, 0) scale(${1 + k * 0.12})`;
-    name.style.transform = `translate3d(0, ${-y * 0.18}px, 0)`;
+    // Three depths: glow drifts slowest, the photo next, the name rises against the scroll
+    heroGlow.style.transform = `translate3d(0, ${(y * 0.55).toFixed(2)}px, 0)`;
+    heroImg.style.transform = `translate3d(0, ${(y * 0.32).toFixed(2)}px, 0) scale(${(1 + k * 0.06).toFixed(4)})`;
+    name.style.transform = `translate3d(0, ${(-y * 0.22).toFixed(2)}px, 0)`;
   }
 
   geo.speed.forEach(p => {
-    p.e.style.translate = `0 ${(p.top + p.h / 2 - y - H / 2) * p.s}px`;
+    if (!onScreen(p, y, H, 200)) return;
+    p.e.style.translate = `0 ${((p.top + p.h / 2 - y - H / 2) * p.s).toFixed(2)}px`;
   });
 
   geo.windows.forEach(w => {
+    if (!onScreen(w, y, H, 200)) return;
     const d = w.top + w.h / 2 - y - H / 2;
-    if (Math.abs(d) > H + w.h) return;
     const off = clamp(-d * w.s, -w.h * 0.14, w.h * 0.14);
-    w.img.style.transform = `translate3d(0, ${off}px, 0)`;
+    w.img.style.transform = `translate3d(0, ${off.toFixed(2)}px, 0)`;
   });
 
-  geo.genres.forEach(g => {
-    const d = clamp(Math.abs(g.top + g.h / 2 - y - H / 2) / (H * 0.55), 0, 1);
-    g.e.style.letterSpacing = `${(GENRE_TRACK * (1 - d * d) - 0.01).toFixed(3)}em`;
-  });
+  if (onScreen(geo.genreList, y, H)) {
+    geo.genres.forEach(g => {
+      const d = clamp(Math.abs(g.top + g.h / 2 - y - H / 2) / (H * 0.55), 0, 1);
+      g.span.style.transform = `scaleX(${(GENRE_MIN + (1 - GENRE_MIN) * (1 - d * d)).toFixed(4)})`;
+    });
+  }
 
-  const g = clamp((H * 0.85 - (geo.lead.top - y)) / (H * 0.35 + geo.lead.h), 0, 1);
-  words.forEach((w, i) => (w.style.opacity = clamp(g * words.length * 1.15 - i, 0.2, 1)));
+  if (onScreen(geo.lead, y, H)) {
+    const g = clamp((H * 0.85 - (geo.lead.top - y)) / (H * 0.35 + geo.lead.h), 0, 1);
+    words.forEach((w, i) => {
+      const o = Math.round(clamp(g * words.length * 1.15 - i, 0.2, 1) * 50) / 50;
+      if (o !== wordOpacity[i]) w.style.opacity = wordOpacity[i] = o;
+    });
+  }
 }
 
 function refresh() {
@@ -580,7 +619,17 @@ refresh();
 Promise.all(['400 100px Tanker', '400 18px Satoshi', '500 18px Satoshi', 'italic 500 18px Satoshi']
   .map(f => document.fonts.load(f).catch(() => {}))).then(refresh);
 addEventListener('load', refresh);
-addEventListener('resize', refresh);
+// Height-only resizes (mobile toolbars) just re-measure; refitting type mid-scroll made it jump
+let lastWidth = innerWidth;
+addEventListener('resize', () => {
+  if (innerWidth !== lastWidth) {
+    lastWidth = innerWidth;
+    refresh();
+  } else {
+    measure();
+    last = -1;
+  }
+});
 requestAnimationFrame(frame);
 </script>
 </body>
