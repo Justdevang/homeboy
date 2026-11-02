@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Homeboy</title>
+<meta name="description" content="Homeboy is an emerging force in Pune's underground music scene, recognized for his eclectic blend of indie dance, nu disco, breakbeat, and minimal techno.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link rel="preload" as="image" href="images/hero-2000.jpg" imagesrcset="images/hero-1200.jpg 1200w, images/hero-2000.jpg 2000w" imagesizes="100vw">
+<!-- Tanker (display) and Satoshi (text), Fontshare: free for commercial use under the ITF Free Font License -->
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=tanker@400&f[]=satoshi@400,500,501,700&display=swap">
+<style>
+:root {
+  --blue: #2423F0;
+  --lime: #D9F23E;
+  --black: #000;
+  --white: #fff;
+  --pad: clamp(16px, 4vw, 56px);
+  --focus: var(--lime);
+  --display: Tanker, Impact, "Arial Narrow", sans-serif;
+  --text: Satoshi, "Helvetica Neue", Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--black); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--white);
+  font: 400 18px/1.5 var(--text);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+::selection { background: var(--lime); color: var(--black); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+/* Liquid glass (see glass.js). Only the nav and the contact panel use it. */
+.glass { position: relative; isolation: isolate; }
+.glass__filter { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; z-index: -1; }
+.glass--svg {
+  background: hsl(0 0% 0% / var(--glass-frost, 0));
+  backdrop-filter: var(--glass-filter) saturate(var(--glass-saturation, 1));
+  box-shadow:
+    0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+    0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+    0 4px 16px rgba(17, 17, 26, .05),
+    0 8px 24px rgba(17, 17, 26, .05),
+    0 16px 56px rgba(17, 17, 26, .05),
+    0 4px 16px rgba(17, 17, 26, .05) inset,
+    0 8px 24px rgba(17, 17, 26, .05) inset,
+    0 16px 56px rgba(17, 17, 26, .05) inset;
+}
+.glass--fallback {
+  background: hsl(0 0% 0% / calc(var(--glass-frost, 0) + .3));
+  -webkit-backdrop-filter: blur(14px) saturate(1.6) brightness(1.1);
+  backdrop-filter: blur(14px) saturate(1.6) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), inset 0 -1px 0 rgba(255, 255, 255, .08);
+}
+
+/* Nav */
+.nav {
+  position: fixed;
+  z-index: 50;
+  top: max(14px, env(safe-area-inset-top));
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  color: var(--white);
+  font: 500 15px/1 var(--text);
+  transition: color .35s;
+}
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 15px;
+  border-radius: 22px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .35s, color .35s;
+}
+.nav a:hover { background: rgba(255, 255, 255, .12); }
+.nav .nav__name { font: 400 24px/1 var(--display); letter-spacing: .02em; padding: 2px 16px 0 18px; }
+.nav a[aria-current="true"] { background: var(--lime); color: var(--black); font-weight: 700; }
+.nav[data-tone="light"] { color: var(--black); --focus: var(--black); }
+.nav[data-tone="light"] a:hover { background: rgba(0, 0, 0, .1); }
+.nav[data-tone="light"] a[aria-current="true"] { background: var(--black); color: var(--lime); }
+.nav[data-tone="light"].glass--fallback { background: hsl(0 0% 100% / .4); }
+
+/* Hero */
+.hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; }
+.hero__media { position: absolute; inset: 0; background: #0a0a12; }
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+/* Fades the photo into the black page so the name stays legible over the decks */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .4) 0%, transparent 20%, transparent 48%, #000 95%);
+}
+.hero__name {
+  position: absolute;
+  z-index: 1;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: clamp(6px, 1.6vw, 24px);
+  margin: 0;
+  color: var(--lime);
+  font: 400 24vw/.82 var(--display);
+  white-space: nowrap;
+  will-change: transform;
+}
+.fit { display: inline-block; }
+
+/* Shared */
+.heading {
+  margin: 0;
+  font: 400 clamp(30px, 3vw, 44px)/1 var(--display);
+  letter-spacing: .01em;
+}
+.frame { position: relative; overflow: hidden; background: #111; }
+.frame img {
+  position: absolute;
+  left: 0;
+  top: -15%;
+  width: 100%;
+  height: 130%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* About */
+.about { padding: clamp(110px, 16vw, 240px) var(--pad) clamp(96px, 12vw, 180px); }
+.about__lead {
+  margin: 0;
+  max-width: 21em;
+  color: var(--lime);
+  font: 500 clamp(28px, 4.1vw, 66px)/1.1 var(--text);
+  letter-spacing: -.025em;
+}
+.about__split {
+  display: grid;
+  grid-template-columns: 5fr 6fr;
+  gap: clamp(40px, 7vw, 130px);
+  align-items: end;
+  margin-top: clamp(80px, 12vw, 200px);
+}
+.about__media { position: relative; margin: 0; padding-bottom: 22%; }
+.frame--tall { width: 80%; aspect-ratio: 3 / 4; }
+.frame--small {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 46%;
+  aspect-ratio: 1437 / 1500;
+  outline: 8px solid var(--black);
+}
+.about__body {
+  margin: 0;
+  max-width: 34em;
+  font: 400 clamp(18px, 1.4vw, 22px)/1.6 var(--text);
+  color: rgba(255, 255, 255, .9);
+}
+.about__body .venue { color: var(--lime); font-weight: 500; }
+.about__body a { color: var(--lime); font-weight: 500; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+.about__body a:hover { text-decoration-thickness: 2px; }
+
+/* Signature sound */
+.sound {
+  background: var(--blue);
+  padding: clamp(96px, 12vw, 190px) var(--pad);
+  overflow: clip;
+}
+.sound .heading { margin-bottom: clamp(40px, 6vw, 88px); }
+.sound__grid {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 28%);
+  gap: clamp(32px, 5vw, 96px);
+  align-items: center;
+}
+.genres { list-style: none; margin: 0; padding: 0; color: var(--lime); min-width: 0; }
+.genres li {
+  font: 400 64px/.88 var(--display);
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: .1em 0 .04em;
+  border-bottom: 1px solid rgba(255, 255, 255, .28);
+}
+.genres li:first-child { border-top: 1px solid rgba(255, 255, 255, .28); }
+/* Lime and black duotone ties the red club photos into the palette */
+.frame--duo { aspect-ratio: 3 / 4; background: var(--lime); }
+.frame--duo img { filter: grayscale(1) brightness(2.6) contrast(1.15); mix-blend-mode: multiply; }
+
+/* Collaborations */
+.collabs {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(40px, 6vw, 120px);
+  align-items: start;
+  padding: clamp(110px, 14vw, 220px) var(--pad);
+}
+.frame--collab { aspect-ratio: 1437 / 1500; }
+.collabs__text { padding-top: clamp(0px, 9vw, 160px); }
+.collabs__title {
+  margin: 0 0 clamp(36px, 5vw, 72px);
+  color: var(--lime);
+  font: 400 clamp(60px, 8.4vw, 150px)/.88 var(--display);
+  text-transform: uppercase;
+}
+.collabs__list { list-style: none; margin: 0; padding: 0; }
+.collabs__list li {
+  display: grid;
+  grid-template-columns: 3em 1fr;
+  gap: 12px;
+  padding: clamp(22px, 2.4vw, 34px) 0;
+  border-top: 1px solid rgba(255, 255, 255, .24);
+}
+.collabs__list .n { color: var(--lime); font: 700 15px/2 var(--text); }
+.collabs__list p { margin: 0; font: 500 clamp(20px, 2vw, 30px)/1.32 var(--text); letter-spacing: -.015em; }
+
+/* Photo band */
+.band { height: clamp(320px, 72vh, 780px); }
+.band .frame { height: 100%; }
+
+/* Client feedback */
+.feedback {
+  --focus: var(--black);
+  background: var(--lime);
+  color: var(--black);
+  padding: clamp(96px, 12vw, 200px) var(--pad);
+}
+.feedback .heading { margin-bottom: clamp(36px, 5vw, 72px); }
+.feedback blockquote { margin: 0; }
+.feedback blockquote p {
+  margin: 0;
+  max-width: 19em;
+  font: italic 500 clamp(30px, 4.4vw, 74px)/1.08 var(--text);
+  letter-spacing: -.03em;
+}
+.feedback__note {
+  margin: clamp(48px, 7vw, 110px) 0 0 auto;
+  max-width: 30em;
+  font: 500 clamp(18px, 1.5vw, 23px)/1.55 var(--text);
+}
+
+/* Contact */
+.contact {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+.contact__media { position: absolute; inset: 0; background: #111; }
+.contact__media img {
+  position: absolute;
+  left: 0;
+  top: -12%;
+  width: 100%;
+  height: 124%;
+  object-fit: cover;
+  object-position: 40% 50%;
+  will-change: transform;
+}
+/* Darkens the photo so white text on the glass keeps AA contrast */
+.contact__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .78), rgba(0, 0, 0, .3) 70%);
+}
+.contact__panel {
+  margin: var(--pad);
+  margin-bottom: max(var(--pad), env(safe-area-inset-bottom));
+  padding: clamp(28px, 3.4vw, 52px);
+  width: min(580px, 100%);
+}
+.contact__title {
+  margin: 0 0 clamp(20px, 2.6vw, 36px);
+  color: var(--lime);
+  font: 400 clamp(64px, 7.4vw, 120px)/.88 var(--display);
+}
+.contact__list { list-style: none; margin: 0; padding: 0; }
+.contact__list li {
+  display: grid;
+  grid-template-columns: 6.2em 1fr;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+}
+.contact__list span { font: 500 14px/1 var(--text); color: rgba(255, 255, 255, .78); }
+.contact__list a {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  font: 500 clamp(18px, 1.8vw, 24px)/1.2 var(--text);
+  letter-spacing: -.01em;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: color .25s;
+}
+.contact__list a:hover { color: var(--lime); }
+
+/* Layout */
+@media (max-width: 760px) {
+  .about__split, .sound__grid, .collabs { grid-template-columns: minmax(0, 1fr); }
+  .about__media { order: 2; padding-bottom: 26%; }
+  .frame--tall { width: 78%; }
+  .frame--small { width: 52%; outline-width: 6px; }
+  .frame--duo { width: 72%; justify-self: end; }
+  .collabs__text { padding-top: 0; }
+  .collabs__title { font-size: 17vw; }
+  .feedback__note { margin-left: 0; }
+  .contact__panel { width: 100%; margin: 0 16px max(16px, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 520px) {
+  .nav { font-size: 14px; }
+  .nav a { padding: 0 12px; }
+  .nav .nav__name { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav" aria-label="Main">
+  <a class="nav__name" href="#top">HOMEBOY</a>
+  <a href="#about">About</a>
+  <a href="#sound">Sound</a>
+  <a href="#collabs">Collabs</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<header class="hero" id="top" data-tone="dark">
+  <div class="hero__media">
+    <img id="hero-img" src="images/hero-2000.jpg" srcset="images/hero-1200.jpg 1200w, images/hero-2000.jpg 2000w" sizes="100vw" alt="Homeboy at the decks seen from behind, facing a packed crowd with hands in the air" fetchpriority="high">
+  </div>
+  <h1 class="hero__name" id="name"><span class="fit">HOMEBOY</span></h1>
+</header>
+
+<main>
+  <section class="about" id="about" data-tone="dark" aria-label="About">
+    <p class="about__lead" id="lead">Homeboy is an emerging force in Pune's underground music scene, recognized for his eclectic blend of indie dance, nu disco, breakbeat, and minimal techno. His sets move fluidly between hypnotic, groove-driven passages and high-energy peaks, delivering an immersive sonic journey that keeps the dance floor engaged from start to finish.</p>
+
+    <div class="about__split">
+      <figure class="about__media">
+        <div class="frame frame--tall" data-window=".1">
+          <img src="images/beams.jpg" alt="Homeboy at the decks under red light beams" loading="lazy" decoding="async">
+        </div>
+        <div class="frame frame--small" data-speed="-.08">
+          <img src="images/still4.jpg" alt="Homeboy in headphones with the crowd pressed close around the booth" loading="lazy" decoding="async">
+        </div>
+      </figure>
+      <p class="about__body">Alongside his work as a performer, Homeboy is deeply committed to music production and to mentoring the next generation of artists, offering instruction in both DJing and music production to aspiring talent across the city. He has performed at some of Pune's leading venues, including <span class="venue">Epitome</span>, <span class="venue">Mask Club</span>, <span class="venue">Sky Stories</span>, <span class="venue">Fat Pigeon</span>, <span class="venue">Raaz</span>, <span class="venue">At The Club</span>, <span class="venue">Bailamos</span>, <span class="venue">Socio</span>, and <span class="venue">Zurus</span>. With his mixes available on <a href="https://www.mixcloud.com/homeboy/" target="_blank" rel="noopener">Mixcloud</a>, Homeboy continues to push creative boundaries and introduce fresh sounds to the community.</p>
+    </div>
+  </section>
+
+  <section class="sound" id="sound" data-tone="dark" aria-labelledby="sound-h">
+    <h2 class="heading" id="sound-h">Signature sound</h2>
+    <div class="sound__grid">
+      <ul class="genres" id="genres">
+        <li><span class="fit">Nu Disco</span></li>
+        <li><span class="fit">Afro</span></li>
+        <li><span class="fit">Drum &amp; Bass</span></li>
+        <li><span class="fit">Indie Dance</span></li>
+        <li><span class="fit">Peak time techno<br>&amp; Acid</span></li>
+        <li><span class="fit">Deep underground<br>techno</span></li>
+      </ul>
+      <div class="frame frame--duo" data-window=".1">
+        <img src="images/tuc.jpg" alt="Homeboy at the decks beneath the TUC sign" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <section class="collabs" id="collabs" data-tone="dark" aria-labelledby="collabs-h">
+    <div class="frame frame--collab" data-window=".1">
+      <img src="images/still3.jpg" alt="Homeboy in headphones, side profile in dark red light" loading="lazy" decoding="async">
+    </div>
+    <div class="collabs__text">
+      <h2 class="collabs__title" id="collabs-h">Collaboration packages</h2>
+      <ol class="collabs__list">
+        <li><span class="n" aria-hidden="true">01</span><p>Opened for few of the most reputed names in the industry like Aayna &amp; Alex Wilcoxx</p></li>
+        <li><span class="n" aria-hidden="true">02</span><p>Hosts multiple podcasts like one run session catering to the elite few in underground industry.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="band" data-tone="dark">
+    <div class="frame" data-window=".18">
+      <img src="images/crowd.jpg" alt="Homeboy with an arm raised in a packed, red-lit room at TUC" loading="lazy" decoding="async">
+    </div>
+  </div>
+
+  <section class="feedback" id="feedback" data-tone="light" aria-labelledby="feedback-h">
+    <h2 class="heading" id="feedback-h">Client feedback</h2>
+    <blockquote>
+      <p>“Homeboy is an amazing DJ and a powerful source of storytelling featuring top chart playlists along with open format DJ’ing.”</p>
+    </blockquote>
+    <p class="feedback__note">Homeboy tends to deliver impromptu mixing according to the dance floor and sets the vibe keeping in mind the need of the hour.</p>
+  </section>
+
+  <section class="contact" id="contact" data-tone="dark" aria-labelledby="contact-h">
+    <div class="contact__media" data-window=".14">
+      <img src="images/floor.jpg" alt="Homeboy on the decks at TUC with the crowd around him" loading="lazy" decoding="async">
+    </div>
+    <div class="contact__panel" id="contact-panel">
+      <h2 class="contact__title" id="contact-h">Get in touch!</h2>
+      <ul class="contact__list">
+        <li><span>Email</span><a href="mailto:hhomeboy19@gmail.com">hhomeboy19@gmail.com</a></li>
+        <li><span>Mixcloud</span><a href="https://www.mixcloud.com/homeboy/" target="_blank" rel="noopener">mixcloud.com/homeboy</a></li>
+        <li><span>Phone</span><a href="tel:+918767542447">(91) 876-754-2447</a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="glass.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const nav = $('#nav');
+const navLinks = $$('#nav a[href^="#"]:not(.nav__name)');
+GlassSurface(nav, { borderRadius: 28, distortionScale: -180, displace: 0.5, backgroundOpacity: 0.1 });
+GlassSurface($('#contact-panel'), {
+  borderRadius: 32,
+  borderWidth: 0.07,
+  brightness: 50,
+  opacity: 0.93,
+  blur: 11,
+  saturation: 1,
+  redOffset: 0,
+  greenOffset: 10,
+  blueOffset: 20,
+  backgroundOpacity: 0.15
+});
+
+const lead = $('#lead');
+lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');
+const words = $$('#lead .w');
+
+const name = $('#name');
+const genres = $$('#genres li');
+// Genres open up with letter-spacing as they cross the middle of the screen
+const GENRE_TRACK = 0.1;
+
+// Size type so it fills its line at its widest state
+function fit(el, max, track) {
+  const span = el.querySelector('.fit');
+  el.style.letterSpacing = track ? GENRE_TRACK + 'em' : '';
+  el.style.fontSize = '100px';
+  const size = Math.min(max, 100 * el.clientWidth / span.offsetWidth);
+  el.style.fontSize = size.toFixed(2) + 'px';
+}
+// Shrink a heading only if a long word pushes past its box
+function fitDown(el) {
+  el.style.fontSize = '';
+  const over = el.scrollWidth / el.clientWidth;
+  if (over > 1.001) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) / over).toFixed(2) + 'px';
+}
+function fitAll() {
+  fit(name, innerHeight * 0.42, false);
+  genres.forEach(li => fit(li, Math.min(180, li.clientWidth * 0.2), true));
+  $$('.heading, .collabs__title, .contact__title').forEach(fitDown);
+}
+
+let lenis = null;
+if (!RM && window.Lenis) {
+  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, touchMultiplier: 1.4 });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href');
+    const target = id === '#top' ? 0 : $(id);
+    if (target === null) return;
+    e.preventDefault();
+    lenis.scrollTo(target, { duration: 1.5, easing: k => 1 - Math.pow(1 - k, 4) });
+    history.replaceState(null, '', id);
+  });
+}
+
+const scrollPos = () => (lenis ? lenis.scroll : scrollY);
+let geo = null;
+function measure() {
+  const y = scrollPos();
+  const box = el => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top + y, h: r.height };
+  };
+  $$('[data-speed]').forEach(e => (e.style.translate = ''));
+  geo = {
+    sections: $$('[data-tone]').map(e => ({ e, id: e.id, tone: e.dataset.tone, ...box(e) })),
+    speed: $$('[data-speed]').map(e => ({ e, s: +e.dataset.speed, ...box(e) })),
+    windows: $$('[data-window]').map(e => ({ img: e.querySelector('img'), s: +e.dataset.window, ...box(e) })),
+    genres: genres.map(e => ({ e, ...box(e) })),
+    lead: box(lead)
+  };
+}
+
+let last = -1;
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (lenis) lenis.raf(now);
+  const y = scrollPos();
+  if (y === last) return;
+  last = y;
+  const H = innerHeight;
+
+  // Nav takes the tone of whatever section sits under it, and marks the section in view
+  const under = geo.sections.find(s => s.top - y <= 40 && s.top + s.h - y > 40);
+  nav.dataset.tone = under ? under.tone : 'dark';
+  const mid = y + H * 0.45;
+  const current = geo.sections.find(s => s.id && s.top <= mid && s.top + s.h > mid);
+  navLinks.forEach(a => {
+    if (current && a.getAttribute('href') === '#' + current.id) a.setAttribute('aria-current', 'true');
+    else a.removeAttribute('aria-current');
+  });
+
+  if (RM) return;
+
+  if (y < H * 1.2) {
+    const k = clamp(y / H, 0, 1);
+    $('#hero-img').style.transform = `translate3d(0, ${y * 0.42}px, 0) scale(${1 + k * 0.12})`;
+    name.style.transform = `translate3d(0, ${-y * 0.18}px, 0)`;
+  }
+
+  geo.speed.forEach(p => {
+    p.e.style.translate = `0 ${(p.top + p.h / 2 - y - H / 2) * p.s}px`;
+  });
+
+  geo.windows.forEach(w => {
+    const d = w.top + w.h / 2 - y - H / 2;
+    if (Math.abs(d) > H + w.h) return;
+    const off = clamp(-d * w.s, -w.h * 0.14, w.h * 0.14);
+    w.img.style.transform = `translate3d(0, ${off}px, 0)`;
+  });
+
+  geo.genres.forEach(g => {
+    const d = clamp(Math.abs(g.top + g.h / 2 - y - H / 2) / (H * 0.55), 0, 1);
+    g.e.style.letterSpacing = `${(GENRE_TRACK * (1 - d * d) - 0.01).toFixed(3)}em`;
+  });
+
+  const g = clamp((H * 0.85 - (geo.lead.top - y)) / (H * 0.35 + geo.lead.h), 0, 1);
+  words.forEach((w, i) => (w.style.opacity = clamp(g * words.length * 1.15 - i, 0.2, 1)));
+}
+
+function refresh() {
+  fitAll();
+  measure();
+  last = -1;
+}
+
+refresh();
+// Measure again once the webfonts are in, since fitted sizes depend on them
+Promise.all(['400 100px Tanker', '400 18px Satoshi', '500 18px Satoshi', 'italic 500 18px Satoshi']
+  .map(f => document.fonts.load(f).catch(() => {}))).then(refresh);
+addEventListener('load', refresh);
+addEventListener('resize', refresh);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
