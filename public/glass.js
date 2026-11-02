@@ -102,7 +102,13 @@
       if (!r.width || !r.height) return;
       img.setAttribute('href', displacementMap(Math.round(r.width), Math.round(r.height), o, id));
     };
-    new ResizeObserver(update).observe(el);
+    // Cards that animate their size would rebuild the map every frame; the stretched
+    // map holds up while moving, so redraw once the size settles
+    let settle;
+    new ResizeObserver(() => {
+      clearTimeout(settle);
+      settle = setTimeout(update, 140);
+    }).observe(el);
     update();
   };
 })();

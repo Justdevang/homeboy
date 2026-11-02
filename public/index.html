@@ -42,7 +42,7 @@ a { color: inherit; }
 ::selection { background: var(--lime); color: var(--black); }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
 
-/* Liquid glass (see glass.js). Only the nav and the contact panel use it. */
+/* Liquid glass (see glass.js): the nav, the highlight cards and the contact panel */
 .glass { position: relative; isolation: isolate; }
 .glass__filter { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; z-index: -1; }
 .glass--svg {
@@ -256,9 +256,99 @@ a { color: inherit; }
 .collabs__list .n { color: var(--lime); font: 700 15px/2 var(--text); }
 .collabs__list p { margin: 0; font: 500 clamp(20px, 2vw, 30px)/1.32 var(--text); letter-spacing: -.015em; }
 
-/* Photo band */
-.band { height: clamp(320px, 72vh, 780px); }
-.band .frame { height: 100%; }
+/* Highlights: a glass bento laid straight over the crowd photo. One card at a time
+   opens up; the tracks it sits on grow, so the whole grid shifts around it. */
+.band { position: relative; padding: clamp(96px, 12vh, 150px) var(--pad); overflow: hidden; }
+.band__photo { position: absolute; inset: 0; }
+/* Takes the edge off the brightest reds so white type on the glass stays readable */
+.band__photo::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .34); }
+.bento {
+  --ease: cubic-bezier(.76, 0, .18, 1);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.1vw, 16px);
+  height: clamp(620px, 88vh, 880px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bento__card { min-width: 0; min-height: 0; overflow: hidden; }
+/* With JS each card is placed absolutely and glides between random bento layouts,
+   every card on its own short delay so the reshuffle ripples instead of snapping */
+.bento.is-live { display: block; }
+.bento.is-live .bento__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition:
+    transform 1.15s var(--ease) var(--delay, 0s),
+    width 1.15s var(--ease) var(--delay, 0s),
+    height 1.15s var(--ease) var(--delay, 0s);
+}
+/* A soft highlight that follows the pointer across the glass */
+.bento__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .16), transparent 60%);
+  opacity: 0;
+  transition: opacity .5s;
+}
+.bento__card:hover::after { opacity: 1; }
+.bento__card > :not(.glass__filter) { position: relative; z-index: 1; }
+.bento__card,
+.bento__link {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: clamp(18px, 1.9vw, 30px);
+}
+.bento__card:has(> .bento__link) { padding: 0; }
+.bento__link { flex: 1; min-height: 0; color: inherit; text-decoration: none; border-radius: inherit; }
+.bento__label {
+  display: flex;
+  gap: 1.4em;
+  margin: 0;
+  font: 700 12px/1 var(--text);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .86);
+  white-space: nowrap;
+}
+.bento__label span:first-child { color: var(--lime); }
+.bento__go { margin-left: auto; transition: color .3s; }
+.bento__link:hover .bento__go { color: var(--lime); }
+.bento__title {
+  margin: 0;
+  font: 400 clamp(30px, 3.3vw, 58px)/.9 var(--display);
+  text-transform: uppercase;
+  transition: color .6s;
+}
+.bento__card.is-open .bento__title { color: var(--lime); }
+/* Detail rows open from 0fr so nothing is measured in JS */
+.bento__more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .95s var(--ease), opacity .4s;
+}
+.bento__more > div { min-height: 0; overflow: hidden; }
+.bento__card.is-open .bento__more { grid-template-rows: 1fr; opacity: 1; transition-delay: 0s, .35s; }
+.bento__text { margin: 14px 0 0; max-width: 30em; font: 500 clamp(16px, 1.25vw, 19px)/1.45 var(--text); color: rgba(255, 255, 255, .92); }
+.bento__tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.bento__tags li {
+  padding: 8px 13px 7px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 999px;
+  font: 700 11px/1 var(--text);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 
 /* Client feedback */
 .feedback {
@@ -351,6 +441,10 @@ a { color: inherit; }
   .collabs__title { font-size: 17vw; }
   .feedback__note { margin-left: 0; }
   .contact__panel { width: 100%; margin: 0 16px max(16px, env(safe-area-inset-bottom)); }
+  /* One column: the open card takes the height, the rest fold down to their labels */
+  .bento { grid-template-columns: minmax(0, 1fr); height: 920px; gap: 10px; }
+  .bento__card, .bento__link { gap: 8px; padding: 16px 18px; }
+  .bento__title { font-size: 28px; }
 }
 @media (max-width: 520px) {
   .nav { font-size: 14px; }
@@ -423,11 +517,69 @@ a { color: inherit; }
     </div>
   </section>
 
-  <div class="band" data-tone="dark">
-    <div class="frame" data-window=".18">
+  <section class="band" data-tone="dark" aria-label="Highlights">
+    <div class="frame band__photo" data-window=".18">
       <img src="images/crowd.jpg" alt="Homeboy with an arm raised in a packed, red-lit room at TUC" loading="lazy" decoding="async">
     </div>
-  </div>
+    <ul class="bento" id="bento">
+      <li class="bento__card">
+        <p class="bento__label"><span>01</span>Sound</p>
+        <div class="bento__foot">
+          <h3 class="bento__title">Signature sound</h3>
+          <div class="bento__more"><div>
+            <ul class="bento__tags"><li>Nu Disco</li><li>Indie Dance</li><li>Break Beat</li><li>Minimal Techno</li><li>Deep underground techno</li></ul>
+          </div></div>
+        </div>
+      </li>
+      <li class="bento__card">
+        <p class="bento__label"><span>02</span>Venues</p>
+        <div class="bento__foot">
+          <h3 class="bento__title">Pune's leading venues</h3>
+          <div class="bento__more"><div>
+            <ul class="bento__tags"><li>Epitome</li><li>Mask Club</li><li>Sky Stories</li><li>Fat Pigeon</li><li>Raaz</li><li>At The Club</li><li>Bailamos</li><li>Socio</li><li>Zurus</li></ul>
+          </div></div>
+        </div>
+      </li>
+      <li class="bento__card">
+        <p class="bento__label"><span>03</span>Opened for</p>
+        <div class="bento__foot">
+          <h3 class="bento__title">Aayna &amp; Alex Wilcoxx</h3>
+          <div class="bento__more"><div>
+            <p class="bento__text">Few of the most reputed names in the industry.</p>
+          </div></div>
+        </div>
+      </li>
+      <li class="bento__card">
+        <p class="bento__label"><span>04</span>Trained</p>
+        <div class="bento__foot">
+          <h3 class="bento__title">Artists trained</h3>
+          <div class="bento__more"><div>
+            <ul class="bento__tags"><li>Jorts</li><li>Jackforest</li><li>Tanisha Music</li><li>Sintara</li><li>Kayte</li><li>Sumone</li><li>Problem Child</li></ul>
+          </div></div>
+        </div>
+      </li>
+      <li class="bento__card">
+        <p class="bento__label"><span>05</span>Mentoring</p>
+        <div class="bento__foot">
+          <h3 class="bento__title">DJing &amp; music production</h3>
+          <div class="bento__more"><div>
+            <p class="bento__text">Instruction for aspiring talent across the city, mentoring the next generation of artists.</p>
+          </div></div>
+        </div>
+      </li>
+      <li class="bento__card">
+        <a class="bento__link" href="https://www.mixcloud.com/HOMEBOYY/" target="_blank" rel="noopener">
+          <p class="bento__label"><span>06</span>Mixes<span class="bento__go" aria-hidden="true">Listen ↗</span></p>
+          <div class="bento__foot">
+            <h3 class="bento__title">Mixes on Mixcloud</h3>
+            <div class="bento__more"><div>
+              <p class="bento__text">mixcloud.com/HOMEBOYY</p>
+            </div></div>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </section>
 
   <section class="feedback" id="feedback" data-tone="light" aria-labelledby="feedback-h">
     <h2 class="heading" id="feedback-h">Client feedback</h2>
@@ -474,6 +626,157 @@ GlassSurface($('#contact-panel'), {
   blueOffset: 20,
   backgroundOpacity: 0.15
 });
+
+// Highlights bento: every few seconds a random card takes the big tile of a random
+// layout and the others scatter into the rest, so any card can end up anywhere.
+// Hovering a card grows it under the pointer and reshuffles everything around it.
+// It rests while off screen or in a background tab.
+const bento = $('#bento');
+const cards = $$('.bento__card');
+cards.forEach(card => GlassSurface(card, {
+  borderRadius: 28,
+  brightness: 50,
+  opacity: 0.93,
+  blur: 11,
+  displace: 0.4,
+  saturation: 1.2,
+  backgroundOpacity: 0.34
+}));
+// Six tiles on a 4 x 3 grid as [col, row, colSpan, rowSpan]; the first is the big one
+const LAYOUTS = [
+  [[0, 0, 2, 2], [2, 0, 1, 1], [3, 0, 1, 1], [2, 1, 2, 1], [0, 2, 2, 1], [2, 2, 2, 1]],
+  [[2, 0, 2, 2], [0, 0, 2, 1], [0, 1, 1, 1], [1, 1, 1, 1], [0, 2, 2, 1], [2, 2, 2, 1]],
+  [[1, 1, 2, 2], [0, 0, 1, 1], [1, 0, 1, 1], [2, 0, 2, 1], [0, 1, 1, 2], [3, 1, 1, 2]],
+  [[0, 1, 3, 2], [0, 0, 1, 1], [1, 0, 1, 1], [2, 0, 2, 1], [3, 1, 1, 1], [3, 2, 1, 1]],
+  [[1, 0, 2, 3], [0, 0, 1, 1], [0, 1, 1, 1], [0, 2, 1, 1], [3, 0, 1, 2], [3, 2, 1, 1]],
+  [[2, 1, 2, 2], [0, 0, 1, 2], [1, 0, 2, 1], [3, 0, 1, 1], [1, 1, 1, 1], [0, 2, 2, 1]],
+  [[0, 0, 3, 2], [3, 0, 1, 1], [3, 1, 1, 1], [0, 2, 1, 1], [1, 2, 1, 1], [2, 2, 2, 1]],
+  [[1, 0, 3, 2], [0, 0, 1, 1], [0, 1, 1, 1], [0, 2, 2, 1], [2, 2, 1, 1], [3, 2, 1, 1]]
+];
+const oneColumn = matchMedia('(max-width: 760px)');
+const shuffled = a => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+let layout = 0;
+let order = cards.map((_, i) => i); // order[slot] = card index; slot 0 is the big tile
+let lockUntil = 0;
+
+function grid() {
+  const g = parseFloat(getComputedStyle(bento).rowGap) || 0;
+  return { W: bento.clientWidth, H: bento.clientHeight, g };
+}
+function placeBento(stagger) {
+  const { W, H, g } = grid();
+  let y = 0;
+  // One column: the open card takes the height, the rest stack in their shuffled order
+  const unit = (H - g * 5) / (cards.length - 1 + 3.6);
+  order.forEach((ci, s) => {
+    let x, top, w, h;
+    if (oneColumn.matches) {
+      x = 0; top = y; w = W; h = unit * (s === 0 ? 3.6 : 1);
+      y += h + g;
+    } else {
+      const [c, r, cs, rs] = LAYOUTS[layout][s];
+      const cw = (W - g * 3) / 4;
+      const rh = (H - g * 2) / 3;
+      x = c * (cw + g); top = r * (rh + g); w = cs * cw + (cs - 1) * g; h = rs * rh + (rs - 1) * g;
+    }
+    const card = cards[ci];
+    card.style.setProperty('--delay', stagger ? (Math.random() * 0.22).toFixed(3) + 's' : '0s');
+    card.style.transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0)`;
+    card.style.width = w.toFixed(1) + 'px';
+    card.style.height = h.toFixed(1) + 'px';
+    card.classList.toggle('is-open', s === 0);
+  });
+}
+// cell: the grid cell under the pointer; the big tile is chosen to cover it
+function shuffleBento(focus, cell) {
+  if (focus === undefined) {
+    focus = order[1 + Math.floor(Math.random() * (cards.length - 1))];
+  }
+  let options = LAYOUTS.map((_, i) => i).filter(i => i !== layout);
+  if (cell) {
+    const covering = LAYOUTS.map((_, i) => i).filter(i => {
+      const [c, r, cs, rs] = LAYOUTS[i][0];
+      return cell[0] >= c && cell[0] < c + cs && cell[1] >= r && cell[1] < r + rs;
+    });
+    options = covering.filter(i => i !== layout).length ? covering.filter(i => i !== layout) : covering;
+  }
+  layout = options[Math.floor(Math.random() * options.length)];
+  order = [focus, ...shuffled(cards.map((_, i) => i).filter(i => i !== focus))];
+  placeBento(true);
+}
+
+let bentoTimer = 0;
+let bentoVisible = false;
+let bentoHeld = false;
+function scheduleBento() {
+  clearTimeout(bentoTimer);
+  if (!bentoVisible || bentoHeld || document.hidden) return;
+  bentoTimer = setTimeout(() => {
+    shuffleBento();
+    scheduleBento();
+  }, 3600);
+}
+new IntersectionObserver(([e]) => {
+  bentoVisible = e.isIntersecting;
+  scheduleBento();
+}).observe(bento);
+document.addEventListener('visibilitychange', scheduleBento);
+new ResizeObserver(() => placeBento(false)).observe(bento);
+
+function takeOver(i, e) {
+  if (i === order[0] || performance.now() < lockUntil) return;
+  lockUntil = performance.now() + 1300;
+  let cell = null;
+  if (e && 'clientX' in e && !oneColumn.matches) {
+    const r = bento.getBoundingClientRect();
+    cell = [clamp(Math.floor((e.clientX - r.left) / r.width * 4), 0, 3), clamp(Math.floor((e.clientY - r.top) / r.height * 3), 0, 2)];
+  }
+  shuffleBento(i, cell);
+  scheduleBento();
+}
+cards.forEach((card, i) => {
+  card.addEventListener('pointerenter', e => {
+    if (e.pointerType !== 'mouse') return;
+    bentoHeld = true;
+    takeOver(i, e);
+  });
+  card.addEventListener('focusin', () => {
+    bentoHeld = true;
+    takeOver(i);
+  });
+  // Touch: a tap opens the card and the cycle restarts from it
+  card.addEventListener('click', e => takeOver(i, e));
+});
+bento.addEventListener('pointermove', e => {
+  const card = e.target.closest('.bento__card');
+  if (!card) return;
+  const r = card.getBoundingClientRect();
+  card.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
+  card.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
+});
+bento.addEventListener('pointerleave', () => {
+  bentoHeld = false;
+  scheduleBento();
+});
+bento.addEventListener('focusout', e => {
+  if (bento.contains(e.relatedTarget)) return;
+  bentoHeld = false;
+  scheduleBento();
+});
+oneColumn.addEventListener('change', () => placeBento(false));
+
+// First placement lands without animating in from the corner
+cards.forEach(c => (c.style.transition = 'none'));
+bento.classList.add('is-live');
+placeBento(false);
+bento.offsetWidth;
+cards.forEach(c => (c.style.transition = ''));
 
 const lead = $('#lead');
 lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="w">${w}</span>`).join(' ');
